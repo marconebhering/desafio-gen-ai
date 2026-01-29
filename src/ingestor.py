@@ -23,7 +23,7 @@ class SRAGIngestor:
         # , 2022: "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2022/INFLUD22-26-06-2025.parquet"
         # , 2023: "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2023/INFLUD23-26-06-2025.parquet"
         # , 2024: "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2024/INFLUD24-26-06-2025.parquet"
-        # , 2025: "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2025/INFLUD25-22-12-2025.parquet"
+        # , 2025: "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2025/INFLUD25-26-06-2025.parquet"
     }
     
     # Colunas relevantes
@@ -135,21 +135,18 @@ class SRAGIngestor:
             return pd.DataFrame()
     
     def apply_mappings(self, df: pd.DataFrame) -> pd.DataFrame:
-        """
-        Aplica mapeamentos de categorias
-        
-        Args:
-            df: DataFrame com dados brutos
-            
-        Returns:
-            DataFrame com categorias mapeadas
-        """
         logger.info("🔄 Aplicando mapeamentos de categorias...")
-        
+
         for col, mapping in self.MAPS.items():
-            if col in df.columns:
-                df[col] = df[col].map(mapping).astype("category")
-        
+            if col not in df.columns:
+                continue
+
+            # Só aplica map se os valores forem numéricos
+            if pd.api.types.is_numeric_dtype(df[col]):
+                df[col] = df[col].map(mapping)
+
+            df[col] = df[col].astype("category")
+
         return df
     
     def load_all_data(self, anos: List[int] = None) -> pd.DataFrame:
