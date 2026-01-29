@@ -29,27 +29,20 @@ col1, col2, col3, col4 = st.columns(4)
 
 with col1:
     st.metric(
-        "📈 Taxa de Aumento", 
-        f"{metrics['taxa_aumento']:.1f}%", 
-        f"{metrics['casos_aumento']:.0f} casos YoY."
+        "📈 Taxa de Aumento de Casos (MoM.)", f"{metrics['taxa_aumento']:.1f}%", chart_data=metrics["casos_mensais"],
+        chart_type="line", border=True
     )
 with col2:
     st.metric(
-        "💀 Taxa de Mortalidade", 
-        f"{metrics['taxa_mortalidade']:.1f}%", 
-        f"-0.5% WoW."
+        "💀 Taxa de Mortalidade", f"{metrics['taxa_mortalidade']:.1f}%", chart_data=metrics['taxa_mortalidade_mensal'], chart_type="line", border=True
     )
 with col3:
     st.metric(
-        "🏥 Ocupação UTI", 
-        f"{metrics['ocupacao_uti']:.1f}%", 
-        "5%"
+        "🏥 Ocupação UTI", f"{metrics['ocupacao_uti']:.1f}%", chart_data=metrics['ocupacao_uti_mensal'], chart_type="line", border=True
     )
 with col4:
     st.metric(
-        "💉 Taxa de Vacinação", 
-        f"{metrics['taxa_vacinacao']:.1f}%", 
-        "3%"
+        "💉 Taxa de Vacinação", f"{metrics['taxa_vacinacao']:.1f}%", chart_data=metrics['taxa_vacinacao_mensal'], chart_type="line", border=True
     )
 
 st.markdown("---")
@@ -80,7 +73,7 @@ with col_graficos:
             fill="tozeroy",
             fillcolor="rgba(37, 99, 235, 0.25)",
             hovertemplate=(
-                "<b>📅 %{x|%d/%m}</b><br><br>"
+                "<b>📅 %{x|%d/%m/%Y}</b><br><br>"
                 "Casos: <b>%{y}</b>"
                 "<extra></extra>"
             )
@@ -88,7 +81,7 @@ with col_graficos:
     )
 
     fig_diario.update_layout(
-        title="📈 Número diário de casos de SRAG (últimos 30 dias)",
+        title="Número diário de casos de SRAG (últimos 30 dias)",
         template="plotly_white",
         height=380,
         dragmode=False,
@@ -139,7 +132,7 @@ with col_graficos:
     )
 
     fig_mensal.update_layout(
-        title="📊 Número mensal de casos de SRAG (últimos 12 meses)",
+        title="Número mensal de casos de SRAG (últimos 12 meses)",
         template="plotly_white",
         height=380,
         dragmode=False,
