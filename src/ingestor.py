@@ -63,37 +63,37 @@ class SRAGIngestor:
             "I": "Ignorado"
         },
         "CS_RACA": {
-            1: "Branca",
-            2: "Preta",
-            3: "Amarela",
-            4: "Parda",
-            5: "Indígena",
-            9: "Ignorado"
+            "1": "Branca",
+            "2": "Preta",
+            "3": "Amarela",
+            "4": "Parda",
+            "5": "Indígena",
+            "9": "Ignorado"
         },
         "CS_ESCOL_N": {
-            0: "Sem escolaridade / Analfabeto",
-            1: "Fundamental I",
-            2: "Fundamental II",
-            3: "Médio",
-            4: "Superior",
-            5: "Não se aplica",
-            9: "Ignorado"
+            "0": "Sem escolaridade / Analfabeto",
+            "1": "Fundamental I",
+            "2": "Fundamental II",
+            "3": "Médio",
+            "4": "Superior",
+            "5": "Não se aplica",
+            "9": "Ignorado"
         },
         "EVOLUCAO": {
-            1: "Cura",
-            2: "Óbito",
-            3: "Óbito por outras causas",
-            9: "Ignorado"
+            "1": "Cura",
+            "2": "Óbito",
+            "3": "Óbito por outras causas",
+            "9": "Ignorado"
         },
         "VACINA": {
-            1: "Sim",
-            2: "Não",
-            9: "Ignorado"
+            "1": "Sim",
+            "2": "Não",
+            "9": "Ignorado"
         },
         "UTI": {
-            1: "Sim",
-            2: "Não",
-            9: "Ignorado"
+            "1": "Sim",
+            "2": "Não",
+            "9": "Ignorado"
         }
     }
     
@@ -141,10 +141,14 @@ class SRAGIngestor:
             if col not in df.columns:
                 continue
 
-            # Só aplica map se os valores forem numéricos
-            if pd.api.types.is_numeric_dtype(df[col]):
-                df[col] = df[col].map(mapping)
-
+            # Preencher None com "9" (Ignorado) para colunas que têm essa chave
+            if "9" in mapping:
+                df[col] = df[col].fillna("9")
+            
+            # Aplicar mapeamento direto (agora com strings)
+            df[col] = df[col].map(mapping)
+            
+            # Converter para categoria
             df[col] = df[col].astype("category")
 
         return df

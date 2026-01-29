@@ -51,9 +51,8 @@ def get_metrics_data():
         query_uti = """
         SELECT 
             COUNT(*) as total_casos,
-            SUM(CASE WHEN UTI = 1 THEN 1 ELSE 0 END) as casos_uti
+            SUM(CASE WHEN UTI = 'Sim' THEN 1 ELSE 0 END) as casos_uti
         FROM srag_cases
-        WHERE DT_NOTIFIC BETWEEN CURRENT_DATE - INTERVAL '30 days' AND CURRENT_DATE
         """
         result_uti = conn.execute(query_uti).fetchall()
         total_casos_uti = result_uti[0][0] or 0
@@ -65,9 +64,8 @@ def get_metrics_data():
         query_vacinacao = """
         SELECT 
             COUNT(*) as total_casos,
-            SUM(CASE WHEN VACINA = 1 THEN 1 ELSE 0 END) as vacinados
+            SUM(CASE WHEN VACINA = 'Sim' THEN 1 ELSE 0 END) as vacinados
         FROM srag_cases
-        WHERE DT_NOTIFIC BETWEEN CURRENT_DATE - INTERVAL '30 days' AND CURRENT_DATE
         """
         result_vacinacao = conn.execute(query_vacinacao).fetchall()
         total_casos_vac = result_vacinacao[0][0] or 0
