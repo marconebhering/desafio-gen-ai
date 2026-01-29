@@ -158,7 +158,7 @@ with col_graficos:
 
 # ----------------- CHAT -----------------
 with col_chat:
-    st.title("💬 Echo Bot")
+    st.title("💬 SRAG Agent")
 
     if "messages" not in st.session_state:
         st.session_state.messages = []
@@ -167,12 +167,20 @@ with col_chat:
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
 
-    if prompt := st.chat_input("Digite sua mensagem..."):
-        st.chat_message("user").markdown(prompt)
-        st.session_state.messages.append({"role": "user", "content": prompt})
+    prompt = st.chat_input("Digite sua mensagem...")
+
+    if prompt:
+        st.session_state.messages.append({
+            "role": "user",
+            "content": prompt
+        })
 
         response = f"Echo: {prompt}"
-        with st.chat_message("assistant"):
-            st.markdown(response)
 
-        st.session_state.messages.append({"role": "assistant", "content": response})
+        st.session_state.messages.append({
+            "role": "assistant",
+            "content": response
+        })
+
+        st.rerun()
+
