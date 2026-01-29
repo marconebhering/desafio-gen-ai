@@ -31,7 +31,7 @@ with col1:
     st.metric(
         "📈 Taxa de Aumento", 
         f"{metrics['taxa_aumento']:.1f}%", 
-        f"{metrics['casos_aumento']:.0f} casos WoW."
+        f"{metrics['casos_aumento']:.0f} casos YoY."
     )
 with col2:
     st.metric(
