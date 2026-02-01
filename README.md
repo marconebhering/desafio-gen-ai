@@ -32,7 +32,7 @@ Sistema desenvolvido para a **Indicium HealthCare Inc.** como Prova de Conceito 
 
 - **Taxa de aumento de casos**: Variação percentual temporal
 - **Taxa de mortalidade**: Proporção óbitos/casos
-- **Taxa de ocupação de UTI**: Monitoramento de capacidade hospitalar
+- **Taxa de ocupação de UTI**: Proporção de Internações na UTI
 - **Taxa de vacinação**: Cobertura populacional
 
 ### 📈 Visualizações
