@@ -3,12 +3,14 @@ import pandas as pd
 import plotly.graph_objects as go
 from pathlib import Path
 import sys
+import json
 
 # Adiciona o diretório pai ao path para importar módulos
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from data.queries import get_metrics_data, get_daily_cases, get_monthly_cases
 from agent import agent
+from agno.db.sqlite import SqliteDb
 
 get_metrics_data = st.cache_data(ttl=3600)(get_metrics_data)
 get_daily_cases = st.cache_data(ttl=3600)(get_daily_cases)
@@ -54,12 +56,10 @@ with col_graficos:
     # ----------------- GRÁFICO DIÁRIO -----------------
     df_diario = get_daily_cases()
     
-    # Se não houver dados, cria um dataframe vazio
     if df_diario.empty:
         st.warning("Nenhum dado disponível para o gráfico diário.")
         df_diario = pd.DataFrame({"data": pd.date_range(end=pd.Timestamp.today(), periods=30, freq="D"), "casos": 0})
     else:
-        # Converte coluna de data se necessário
         df_diario['data'] = pd.to_datetime(df_diario['data'])
 
     fig_diario = go.Figure()
@@ -158,12 +158,18 @@ with col_graficos:
 with col_chat:
     st.title("💬 SRAG Agent")
 
+    show_traces = st.toggle("🔍 Mostrar Traces", value=False, help="Exibe os traces de execução em JSON")
+
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
     for msg in st.session_state.messages:
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
+            
+            if show_traces and msg["role"] == "assistant" and "trace" in msg:
+                with st.expander("📊 Ver Trace da Execução", expanded=False):
+                    st.json(msg["trace"], expanded=False)
 
     prompt = st.chat_input("Digite sua mensagem...")
 
@@ -177,13 +183,35 @@ with col_chat:
             try:
                 run_output = agent.run(prompt, markdown=True)
                 response = run_output.content
+                
+                trace_data = {}
+                
+                if hasattr(run_output, 'model_dump'):
+                    trace_data = run_output.model_dump()
+                elif hasattr(run_output, '__dict__'):
+                    trace_data = {
+                        k: v for k, v in run_output.__dict__.items() 
+                        if not k.startswith('_')
+                    }
+                
+                try:
+                    db = SqliteDb(db_file="tmp/traces.db")
+                except Exception as db_error:
+                    trace_data["db_error"] = str(db_error)
+                
             except Exception as e:
                 response = f"❌ Desculpe, ocorreu um erro ao processar sua pergunta: {str(e)}"
+                trace_data = {"error": str(e)}
 
-        st.session_state.messages.append({
+        # Armazena a mensagem com trace
+        message_data = {
             "role": "assistant",
             "content": response
-        })
+        }
+        
+        if trace_data:
+            message_data["trace"] = trace_data
+            
+        st.session_state.messages.append(message_data)
 
         st.rerun()
-

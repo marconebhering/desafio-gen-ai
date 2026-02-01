@@ -1,19 +1,23 @@
 from agno.agent import Agent
+from agno.os import AgentOS
+from agno.tracing import setup_tracing
 from agno.tools.duckdb import DuckDbTools
 from agno.tools.websearch import WebSearchTools
 from agno.knowledge.knowledge import Knowledge
 from agno.vectordb.chroma import ChromaDb
 from agno.guardrails import PromptInjectionGuardrail
 from guardrails.content_filter import ContentFilterGuardrail
+from agno.db.sqlite import SqliteDb
 from pathlib import Path
+
+db = SqliteDb(db_file="tmp/traces.db")
+setup_tracing(db=db)
 
 BASE_DIR = Path(__file__).parent 
 
 DB_PATH = BASE_DIR / "data" / "database" / "srag_database.duckdb"
 KNOWLEDGE_PDF_PATH = BASE_DIR / "data" / "knowledge" / "dicionario_variaveis_srag.pdf"
 CHROMA_DB_PATH = BASE_DIR / "tmp" / "chromadb"
-# -----------------------------------------------------
-
 
 # Create a knowledge base
 knowledge = Knowledge(
