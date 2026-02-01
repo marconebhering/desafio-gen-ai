@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 import plotly.graph_objects as go
 from pathlib import Path
 import sys
@@ -9,6 +8,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from data.queries import get_metrics_data, get_daily_cases, get_monthly_cases
+from agent import agent
 
 get_metrics_data = st.cache_data(ttl=3600)(get_metrics_data)
 get_daily_cases = st.cache_data(ttl=3600)(get_daily_cases)
@@ -108,12 +108,10 @@ with col_graficos:
     # ----------------- GRÁFICO MENSAL -----------------
     df_mensal = get_monthly_cases()
     
-    # Se não houver dados, cria um dataframe vazio
     if df_mensal.empty:
         st.warning("Nenhum dado disponível para o gráfico mensal.")
         df_mensal = pd.DataFrame({"mes": pd.date_range(end=pd.Timestamp.today(), periods=12, freq="MS"), "casos": 0})
     else:
-        # Converte coluna de data se necessário
         df_mensal['mes'] = pd.to_datetime(df_mensal['mes'])
 
     fig_mensal = go.Figure()
@@ -175,7 +173,12 @@ with col_chat:
             "content": prompt
         })
 
-        response = f"Echo: {prompt}"
+        with st.spinner("🤔 Analisando sua pergunta..."):
+            try:
+                run_output = agent.run(prompt, markdown=True)
+                response = run_output.content
+            except Exception as e:
+                response = f"❌ Desculpe, ocorreu um erro ao processar sua pergunta: {str(e)}"
 
         st.session_state.messages.append({
             "role": "assistant",
