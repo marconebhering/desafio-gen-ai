@@ -71,7 +71,7 @@ graph LR
 | **Frontend** | Streamlit | Interface interativa para usuários |
 | **Orquestrador** | Agno Framework | Coordena ferramentas e gera relatórios |
 | **Web Search** | Custom Tool | Busca notícias atuais sobre SRAG |
-| **RAG** | Agno + Vector DB | Consulta dicionário de variáveis |
+| **RAG** | Agno + Chroma DB (Vector DB) | Consulta dicionário de variáveis |
 | **Database** | DuckDB | Queries analíticas de alta performance |
 | **LLM** | GPT-5.1 | Geração de insights contextualizados |
 
